@@ -57,6 +57,19 @@ function onFixChange(event: Event) {
         Validate a Lokalise glossary CSV directly in your browser. Your file is
         not uploaded anywhere.
       </p>
+
+      <p>
+        <em
+          ><small
+            >Source code:
+            <a
+              href="https://github.com/bodrovis/lokalise-glossary-guard-web"
+              target="_blank"
+              >github.com/bodrovis/lokalise-glossary-guard-web</a
+            ></small
+          ></em
+        >
+      </p>
     </header>
 
     <form class="form" @submit.prevent="emit('submit')">
@@ -92,10 +105,7 @@ function onFixChange(event: Event) {
             placeholder="en_US,fr_FR,de_DE"
             aria-describedby="langs-help"
             @input="
-              emit(
-                'update:langs',
-                ($event.target as HTMLInputElement).value,
-              )
+              emit('update:langs', ($event.target as HTMLInputElement).value)
             "
           />
 
