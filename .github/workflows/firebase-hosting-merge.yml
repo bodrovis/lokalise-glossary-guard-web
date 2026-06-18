@@ -11,12 +11,11 @@ permissions:
   pull-requests: write
 
 jobs:
-  build_and_preview:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+  build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -38,3 +37,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOKALISE_GLOSSARY_GUARD }}
           projectId: lokalise-glossary-guard
+          channelId: live
