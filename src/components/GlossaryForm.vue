@@ -9,6 +9,7 @@ const props = defineProps<{
   hardFailOnError: boolean;
   loading: boolean;
   canSubmit: boolean;
+  maxFileSizeLabel: string;
 }>();
 
 const emit = defineEmits<{
@@ -54,11 +55,25 @@ function onFixChange(event: Event) {
     <header class="form-header">
       <h1>Lokalise Glossary Guard</h1>
       <p>
-        Validate a Lokalise glossary CSV directly in your browser. Your file is
-        not uploaded anywhere.
+        Select a Lokalise glossary CSV file and check it before importing it
+        into Lokalise. The file is opened locally in your browser: it is not
+        sent to this website, Firebase, Lokalise, or any external server.
       </p>
 
-      <p>
+      <p class="help">
+        Lokalise glossaries help keep translations consistent by defining
+        approved terms, forbidden terms, translations, and related metadata. You
+        can read more in the
+        <a
+          href="https://docs.lokalise.com/en/articles/1400629-glossary"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Lokalise glossary documentation </a
+        >.
+      </p>
+
+      <p class="help">
         <em
           ><small
             >Source code:
@@ -66,8 +81,15 @@ function onFixChange(event: Event) {
               href="https://github.com/bodrovis/lokalise-glossary-guard-web"
               target="_blank"
               >github.com/bodrovis/lokalise-glossary-guard-web</a
-            ></small
-          ></em
+            >
+
+            CLI tool:
+            <a
+              href="https://github.com/bodrovis/lokalise-glossary-guard"
+              target="_blank"
+              >github.com/bodrovis/lokalise-glossary-guard</a
+            >
+          </small></em
         >
       </p>
     </header>
@@ -86,8 +108,11 @@ function onFixChange(event: Event) {
           />
 
           <span id="csv-help" class="help">
-            Choose the glossary CSV file you want to validate. Maximum file
-            size: <strong>25 MB</strong>.
+            Choose a glossary CSV exported from or prepared for Lokalise. The
+            file is read by the browser only and passed directly to the local
+            WebAssembly validator. Maximum file size:
+            <strong>{{ maxFileSizeLabel }}</strong
+            >.
           </span>
         </label>
 

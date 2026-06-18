@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lokalise-glossary-guard.web.app/sitemap.xml

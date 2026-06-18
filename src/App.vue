@@ -16,6 +16,7 @@ const guard = useGlossaryValidation();
       :hard-fail-on-error="guard.hardFailOnError.value"
       :loading="guard.loading.value"
       :can-submit="guard.canSubmit.value"
+      :max-file-size-label="guard.maxFileSizeLabel"
       @file-change="guard.setFile"
       @update:langs="guard.langs.value = $event"
       @update:fix="guard.fix.value = $event"

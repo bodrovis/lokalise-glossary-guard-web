@@ -1,0 +1,16 @@
+{
+  "name": "Lokalise Glossary Guard",
+  "short_name": "Glossary Guard",
+  "description": "Validate Lokalise glossary CSV files locally in your browser.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff8f7",
+  "theme_color": "#fee9e6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

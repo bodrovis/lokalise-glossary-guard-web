@@ -118,5 +118,6 @@ export function useGlossaryValidation() {
     setFile,
     validate,
     downloadFixed,
+    maxFileSizeLabel: MAX_CSV_FILE_SIZE_LABEL,
   };
 }
