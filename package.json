@@ -1,0 +1,29 @@
+{
+  "name": "lokalise-glossary-guard-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "fetch:wasm": "node scripts/fetch-wasm.mjs",
+    "dev:wasm": "npm run fetch:wasm && npm run dev",
+    "lint": "npx @biomejs/biome check ./",
+    "lint:fix": "npx @biomejs/biome check --write ./",
+    "lint:fix:unsafe": "npx @biomejs/biome check --write --unsafe ./"
+  },
+  "dependencies": {
+    "vue": "^3.5.34"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.0",
+    "@types/node": "^25.9.3",
+    "@vitejs/plugin-vue": "^6.0.6",
+    "@vue/tsconfig": "^0.9.1",
+    "adm-zip": "^0.5.17",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12",
+    "vue-tsc": "^3.2.8"
+  }
+}
