@@ -34,7 +34,6 @@ jobs:
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOKALISE_GLOSSARY_GUARD }}
           projectId: lokalise-glossary-guard
           channelId: live
