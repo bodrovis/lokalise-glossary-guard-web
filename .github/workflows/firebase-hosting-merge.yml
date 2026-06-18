@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: '26'
+          node-version: 22
           cache: 'npm'
 
       - run: npm ci
@@ -37,3 +37,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOKALISE_GLOSSARY_GUARD }}
           projectId: lokalise-glossary-guard
           channelId: live
+          firebaseToolsVersion: 15.19.1
