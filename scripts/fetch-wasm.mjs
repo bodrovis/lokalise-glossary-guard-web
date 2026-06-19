@@ -2,30 +2,72 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import AdmZip from "adm-zip";
 
 const repo = "bodrovis/lokalise-glossary-guard";
-const version = process.env.GUARD_VERSION || "latest";
+const requestedVersion = process.env.GUARD_VERSION || "latest";
 
-if (version === "latest") {
-  throw new Error(
-    "latest with versioned zip name is ambiguous; set GUARD_VERSION=v1.3.0-beta",
-  );
+const githubHeaders = {
+  Accept: "application/vnd.github+json",
+  "User-Agent": "lokalise-glossary-guard-web",
+};
+
+if (process.env.GITHUB_TOKEN) {
+  githubHeaders.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
 }
 
-const base = `https://github.com/${repo}/releases/download/${version}`;
-const asset =
+async function fetchJSON(url) {
+  const res = await fetch(url, { headers: githubHeaders });
+
+  if (!res.ok) {
+    throw new Error(`GitHub API request failed: ${res.status} ${res.statusText}\n${url}`);
+  }
+
+  return res.json();
+}
+
+async function resolveRelease(version) {
+  if (version !== "latest") {
+    const release = await fetchJSON(
+      `https://api.github.com/repos/${repo}/releases/tags/${version}`,
+    );
+
+    return release;
+  }
+
+  // GitHub "latest" means latest non-draft, non-prerelease release.
+  return fetchJSON(`https://api.github.com/repos/${repo}/releases/latest`);
+}
+
+const release = await resolveRelease(requestedVersion);
+const version = release.tag_name;
+
+const assetName =
   process.env.GUARD_ASSET ||
   `lokalise-glossary-guard_${version.replace(/^v/, "")}_wasm.zip`;
 
-await mkdir("public/wasm", { recursive: true });
+const asset = release.assets.find((a) => a.name === assetName);
 
-const url = `${base}/${asset}`;
-console.log(`Fetching ${url}`);
+if (!asset) {
+  const available = release.assets.map((a) => `- ${a.name}`).join("\n");
 
-const res = await fetch(url);
-if (!res.ok) {
-  throw new Error(`Failed to fetch ${asset}: ${res.status} ${res.statusText}\n${url}`);
+  throw new Error(
+    `Asset not found: ${assetName}\n` +
+      `Release: ${version}\n` +
+      `Available assets:\n${available || "(none)"}`,
+  );
 }
 
-const zipPath = `public/wasm/${asset}`;
+await mkdir("public/wasm", { recursive: true });
+
+console.log(`Fetching ${asset.browser_download_url}`);
+
+const res = await fetch(asset.browser_download_url);
+
+if (!res.ok) {
+  throw new Error(
+    `Failed to fetch ${asset.name}: ${res.status} ${res.statusText}\n${asset.browser_download_url}`,
+  );
+}
+
+const zipPath = `public/wasm/${asset.name}`;
 await writeFile(zipPath, Buffer.from(await res.arrayBuffer()));
 
 const zip = new AdmZip(zipPath);
@@ -33,4 +75,4 @@ zip.extractAllTo("public/wasm", true);
 
 await rm(zipPath);
 
-console.log("WASM assets fetched and extracted.");
+console.log(`WASM assets fetched and extracted from ${version}.`);
