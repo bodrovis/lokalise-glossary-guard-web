@@ -37,6 +37,10 @@ function onFileChange(event: Event) {
   emit("file-change", input.files?.[0] ?? null);
 }
 
+function onLangsInput(event: Event) {
+  emit("update:langs", (event.target as HTMLInputElement).value);
+}
+
 function onFixChange(event: Event) {
   const checked = (event.target as HTMLInputElement).checked;
 
@@ -48,12 +52,21 @@ function onFixChange(event: Event) {
     emit("update:rerun-after-fix", true);
   }
 }
+
+function onRerunAfterFixChange(event: Event) {
+  emit("update:rerun-after-fix", (event.target as HTMLInputElement).checked);
+}
+
+function onHardFailOnErrorChange(event: Event) {
+  emit("update:hard-fail-on-error", (event.target as HTMLInputElement).checked);
+}
 </script>
 
 <template>
   <section class="card">
     <header class="form-header">
       <h1>Lokalise Glossary Guard</h1>
+
       <p>
         Select a Lokalise glossary CSV file and check it before importing it
         into Lokalise. The file is opened locally in your browser: it is not
@@ -67,34 +80,38 @@ function onFixChange(event: Event) {
         <a
           href="https://docs.lokalise.com/en/articles/1400629-glossary"
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
         >
           Lokalise glossary documentation </a
         >.
       </p>
 
       <p class="help">
-        <em
-          ><small
-            >Source code:
+        <em>
+          <small>
+            Source code:
             <a
               href="https://github.com/bodrovis/lokalise-glossary-guard-web"
               target="_blank"
-              >github.com/bodrovis/lokalise-glossary-guard-web</a
+              rel="noopener noreferrer"
             >
+              github.com/bodrovis/lokalise-glossary-guard-web
+            </a>
 
             CLI tool:
             <a
               href="https://github.com/bodrovis/lokalise-glossary-guard"
               target="_blank"
-              >github.com/bodrovis/lokalise-glossary-guard</a
+              rel="noopener noreferrer"
             >
-          </small></em
-        >
+              github.com/bodrovis/lokalise-glossary-guard
+            </a>
+          </small>
+        </em>
       </p>
     </header>
 
-    <form class="form" @submit.prevent="emit('submit')">
+    <form class="form" :aria-busy="loading" @submit.prevent="emit('submit')">
       <div class="form-section">
         <label class="field">
           <span class="field-label">CSV file</span>
@@ -104,6 +121,7 @@ function onFixChange(event: Event) {
             type="file"
             accept=".csv,text/csv"
             aria-describedby="csv-help"
+            :disabled="loading"
             @change="onFileChange"
           />
 
@@ -129,9 +147,8 @@ function onFixChange(event: Event) {
             :value="langs"
             placeholder="en_US,fr_FR,de_DE"
             aria-describedby="langs-help"
-            @input="
-              emit('update:langs', ($event.target as HTMLInputElement).value)
-            "
+            :disabled="loading"
+            @input="onLangsInput"
           />
 
           <span id="langs-help" class="help">
@@ -143,7 +160,7 @@ function onFixChange(event: Event) {
         </label>
       </div>
 
-      <fieldset class="form-section options">
+      <fieldset class="form-section options" :disabled="loading">
         <legend>Validation options</legend>
 
         <label class="option-card">
@@ -163,13 +180,8 @@ function onFixChange(event: Event) {
           <input
             type="checkbox"
             :checked="rerunAfterFix"
-            :disabled="!fix"
-            @change="
-              emit(
-                'update:rerun-after-fix',
-                ($event.target as HTMLInputElement).checked,
-              )
-            "
+            :disabled="!fix || loading"
+            @change="onRerunAfterFixChange"
           />
 
           <span class="option-body">
@@ -185,12 +197,7 @@ function onFixChange(event: Event) {
           <input
             type="checkbox"
             :checked="hardFailOnError"
-            @change="
-              emit(
-                'update:hard-fail-on-error',
-                ($event.target as HTMLInputElement).checked,
-              )
-            "
+            @change="onHardFailOnErrorChange"
           />
 
           <span class="option-body">
@@ -204,7 +211,7 @@ function onFixChange(event: Event) {
       </fieldset>
 
       <div class="form-actions">
-        <button class="primary-button" :disabled="!canSubmit">
+        <button type="submit" class="primary-button" :disabled="!canSubmit">
           {{ loading ? "Checking..." : "Check glossary" }}
         </button>
 

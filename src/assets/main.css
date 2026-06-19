@@ -8,7 +8,7 @@
   --color-aqua: #77c2af;
   --color-blue: #5bc0de;
   --color-success: #5cb85c;
-  --color-warning: #d18a8a;
+  --color-warning: #d49a32;
   --color-danger: #eb5a46;
 
   --color-bg: #fff8f7;
@@ -230,8 +230,7 @@ button {
   font: inherit;
 }
 
-.primary-button,
-.card > button {
+.primary-button {
   padding: 12px 18px;
   border: 0;
   border-radius: var(--radius-control);
@@ -244,8 +243,7 @@ button {
     opacity 0.15s ease;
 }
 
-.primary-button:hover,
-.card > button:hover {
+.primary-button:hover {
   background: #2b2b2b;
 }
 
@@ -297,6 +295,7 @@ button:disabled {
   border-collapse: separate;
   border-spacing: 0 8px;
   font-size: 0.95rem;
+  min-width: 760px;
 }
 
 .outcomes-table th,
@@ -406,6 +405,58 @@ button:disabled {
 .message-cell {
   color: #444;
   line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.result-header {
+  display: grid;
+  gap: 6px;
+}
+
+.result-header h2 {
+  margin: 0;
+}
+
+.result-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.9em;
+  font-weight: 800;
+}
+
+.result-status.is-passed {
+  color: #1f6f1f;
+  background: rgba(92, 184, 92, 0.18);
+}
+
+.result-status.is-warned {
+  color: #855252;
+  background: rgba(209, 138, 138, 0.22);
+}
+
+.result-status.is-failed,
+.result-status.is-errored {
+  color: #a83222;
+  background: rgba(235, 90, 70, 0.18);
+}
+
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  background: #f9f5f4;
+}
+
+fieldset:disabled .option-card {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+fieldset:disabled .option-card:hover {
+  border-color: var(--color-border);
+  background: #fff;
+  box-shadow: none;
 }
 
 @media (max-width: 640px) {
@@ -428,8 +479,7 @@ button:disabled {
     flex-direction: column;
   }
 
-  .primary-button,
-  .card > button {
+  .primary-button {
     width: 100%;
   }
 }

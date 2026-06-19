@@ -8,10 +8,11 @@ export type ValidateRequest = {
 };
 
 export type ValidateStatus = "passed" | "passed_with_warnings" | "failed";
+export type OutcomeStatus = "PASS" | "WARN" | "FAIL" | "ERROR";
 
 export type Outcome = {
   name: string;
-  status: string;
+  status: OutcomeStatus;
   message?: string;
   critical: boolean;
   changed: boolean;
@@ -49,8 +50,14 @@ export type ValidateResponse = {
   summary: Summary;
 };
 
-export type WasmValidateEnvelope = {
-  ok: boolean;
-  result?: ValidateResponse;
-  error?: string;
-};
+export type WasmValidateEnvelope =
+  | {
+      ok: true;
+      result: ValidateResponse;
+      error?: string;
+    }
+  | {
+      ok: false;
+      result?: never;
+      error: string;
+    };

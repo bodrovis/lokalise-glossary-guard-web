@@ -3,6 +3,13 @@ import { MAX_CSV_FILE_SIZE_BYTES, MAX_CSV_FILE_SIZE_LABEL } from "../constants/f
 import { validateGlossary } from "../lib/wasmGuard";
 import type { ValidateResponse } from "../types/guard";
 
+export function parseLangs(input: string): string[] {
+  return input
+    .split(",")
+    .map((lang) => lang.trim())
+    .filter(Boolean);
+}
+
 export function useGlossaryValidation() {
   const file = ref<File | null>(null);
   const langs = ref("");
@@ -18,7 +25,11 @@ export function useGlossaryValidation() {
   const canSubmit = computed(() => Boolean(file.value) && !loading.value);
 
   const canDownloadFixed = computed(() => {
-    return Boolean(result.value?.fixed && result.value.fixed_text && file.value);
+    return Boolean(
+      result.value?.fixed &&
+        result.value.fixed_text !== undefined &&
+        file.value,
+    );
   });
 
   function setFile(nextFile: File | null) {
@@ -40,22 +51,20 @@ export function useGlossaryValidation() {
   }
 
   async function validate() {
-    if (!file.value) return;
+    const currentFile = file.value;
+    if (!currentFile) return;
 
     loading.value = true;
     error.value = "";
     result.value = null;
 
     try {
-      const data = await file.value.text();
+      const data = await currentFile.text();
 
       const envelope = await validateGlossary({
-        path: file.value.name,
+        path: currentFile.name,
         data,
-        langs: langs.value
-          .split(",")
-          .map((lang) => lang.trim())
-          .filter(Boolean),
+        langs: parseLangs(langs.value),
         fix: fix.value,
         rerun_after_fix: rerunAfterFix.value,
         hard_fail_on_error: hardFailOnError.value,
@@ -67,11 +76,6 @@ export function useGlossaryValidation() {
       }
 
       const nextResult = envelope.result;
-
-      if (!nextResult) {
-        error.value = "WASM returned empty result";
-        return;
-      }
 
       if (envelope.error && !nextResult.error) {
         nextResult.error = envelope.error;
@@ -86,7 +90,7 @@ export function useGlossaryValidation() {
   }
 
   function downloadFixed() {
-    if (!result.value?.fixed_text || !file.value) return;
+    if (result.value?.fixed_text === undefined || !file.value) return;
 
     const blob = new Blob([result.value.fixed_text], {
       type: "text/csv;charset=utf-8",
@@ -98,10 +102,15 @@ export function useGlossaryValidation() {
     const originalName = file.value.name.replace(/\.csv$/i, "");
 
     a.href = url;
-    a.download = `${originalName}.fixed.csv`;
-    a.click();
+    a.download = `${originalName}_fixed.csv`;
 
-    URL.revokeObjectURL(url);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 0);
   }
 
   return {

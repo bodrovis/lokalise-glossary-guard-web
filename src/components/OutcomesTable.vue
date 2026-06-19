@@ -5,7 +5,7 @@ defineProps<{
   outcomes: Outcome[];
 }>();
 
-function statusClass(status: string) {
+function statusClass(status: Outcome["status"]) {
   switch (status.toLowerCase()) {
     case "pass":
     case "passed":
@@ -29,7 +29,7 @@ function statusClass(status: string) {
   }
 }
 
-function statusLabel(status: string) {
+function statusLabel(status: Outcome["status"]) {
   switch (status.toLowerCase()) {
     case "pass":
     case "passed":
@@ -52,12 +52,22 @@ function statusLabel(status: string) {
       return status || "Unknown";
   }
 }
+
+function messageText(outcome: Outcome) {
+  const message = outcome.message?.trim();
+  const note = outcome.note?.trim();
+
+  if (message && note) {
+    return `${message} Note: ${note}`;
+  }
+
+  return message || note || "—";
+}
 </script>
 
 <template>
   <div class="table-wrap">
     <table class="outcomes-table">
-      
       <thead>
         <tr>
           <th class="index-col">#</th>
@@ -103,7 +113,7 @@ function statusLabel(status: string) {
           </td>
 
           <td class="message-cell">
-            {{ outcome.message || outcome.note || "—" }}
+            {{ messageText(outcome) }}
           </td>
         </tr>
       </tbody>

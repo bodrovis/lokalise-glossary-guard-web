@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { ValidateResponse } from "../types/guard";
 import OutcomesTable from "./OutcomesTable.vue";
 
-defineProps<{
+const props = defineProps<{
   result: ValidateResponse;
   canDownloadFixed: boolean;
 }>();
@@ -10,11 +11,44 @@ defineProps<{
 const emit = defineEmits<{
   "download-fixed": [];
 }>();
+
+const statusLabel = computed(() => {
+  switch (props.result.status) {
+    case "passed":
+      return "Passed";
+    case "passed_with_warnings":
+      return "Passed with warnings";
+    case "failed":
+      return "Failed";
+    default:
+      return props.result.status;
+  }
+});
+
+const statusClass = computed(() => {
+  return {
+    "is-passed": props.result.passed,
+    "is-warned": props.result.warned,
+    "is-failed": props.result.failed,
+    "is-errored": props.result.errored,
+  };
+});
 </script>
 
 <template>
   <section class="card">
-    <h2>Result: {{ result.status }}</h2>
+    <header class="result-header">
+      <h2>
+        Result:
+        <span class="result-status" :class="statusClass">
+          {{ statusLabel }}
+        </span>
+      </h2>
+
+      <p v-if="result.path" class="help">
+        File: <strong>{{ result.path }}</strong>
+      </p>
+    </header>
 
     <div class="summary">
       <span>Pass: {{ result.summary.pass }}</span>
@@ -27,7 +61,24 @@ const emit = defineEmits<{
       {{ result.error }}
     </p>
 
-    <button v-if="canDownloadFixed" @click="emit('download-fixed')">
+    <p v-if="result.summary.applied_fixes" class="help">
+      Fixes were applied to the validated data.
+    </p>
+
+    <p v-if="result.summary.early_exit" class="help">
+      Validation stopped early after
+      <strong>{{ result.summary.early_check || "a check" }}</strong>
+      returned
+      <strong>{{ result.summary.early_status || "a fail-fast result" }}</strong
+      >.
+    </p>
+
+    <button
+      v-if="canDownloadFixed"
+      type="button"
+      class="primary-button"
+      @click="emit('download-fixed')"
+    >
       Download fixed CSV
     </button>
 
@@ -35,5 +86,9 @@ const emit = defineEmits<{
       v-if="result.summary.outcomes.length"
       :outcomes="result.summary.outcomes"
     />
+
+    <p v-else class="help">
+      No detailed check outcomes were returned.
+    </p>
   </section>
 </template>
