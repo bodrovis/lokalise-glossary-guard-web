@@ -18,7 +18,7 @@ The original file is not uploaded anywhere. Validation runs client-side through 
 * Go WebAssembly
 * Firebase Hosting
 
-The validation logic comes from the [lokalise-glossary-guard](https://github.com/bodrovis/lokalise-glossary-guard) Go project. The web app downloads the WASM release artifact and uses it in the browser.
+The validation logic comes from the [lokalise-glossary-guard](https://github.com/bodrovis/lokalise-glossary-guard) Go project, bindings are fetched from [github.com/bodrovis/lokalise-glossary-guard-wasm](https://github.com/bodrovis/lokalise-glossary-guard-wasm).
 
 ## Local development
 
