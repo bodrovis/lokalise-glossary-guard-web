@@ -7,13 +7,12 @@
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
-    "fetch:wasm": "node scripts/fetch-wasm.mjs",
-    "dev:wasm": "npm run fetch:wasm && npm run dev",
-    "lint": "npx @biomejs/biome check ./",
-    "lint:fix": "npx @biomejs/biome check --write ./",
-    "lint:fix:unsafe": "npx @biomejs/biome check --write --unsafe ./"
+    "lint": "biome check ./",
+    "lint:fix": "biome check --write ./",
+    "lint:fix:unsafe": "biome check --write --unsafe ./"
   },
   "dependencies": {
+    "lokalise-glossary-guard-wasm": "^1.0.0",
     "vue": "^3.5.34"
   },
   "devDependencies": {

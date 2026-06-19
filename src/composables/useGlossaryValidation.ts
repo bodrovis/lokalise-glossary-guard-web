@@ -1,7 +1,6 @@
+import { type ValidateResponse, validateGlossary } from "lokalise-glossary-guard-wasm";
 import { computed, ref } from "vue";
 import { MAX_CSV_FILE_SIZE_BYTES, MAX_CSV_FILE_SIZE_LABEL } from "../constants/files";
-import { validateGlossary } from "../lib/wasmGuard";
-import type { ValidateResponse } from "../types/guard";
 
 export function parseLangs(input: string): string[] {
   return input
@@ -26,9 +25,7 @@ export function useGlossaryValidation() {
 
   const canDownloadFixed = computed(() => {
     return Boolean(
-      result.value?.fixed &&
-        result.value.fixed_text !== undefined &&
-        file.value,
+      result.value?.fixed && result.value.fixed_text !== undefined && file.value,
     );
   });
 

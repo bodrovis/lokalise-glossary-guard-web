@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Outcome } from "../types/guard";
+import type { Outcome } from "lokalise-glossary-guard-wasm";
 
 defineProps<{
   outcomes: Outcome[];

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import type { ValidateResponse } from "../types/guard";
+import type { ValidateResponse } from "lokalise-glossary-guard-wasm";
 import OutcomesTable from "./OutcomesTable.vue";
 
 const props = defineProps<{
