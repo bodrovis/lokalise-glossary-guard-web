@@ -25,13 +25,7 @@ The validation logic comes from the [lokalise-glossary-guard](https://github.com
 Install dependencies:
 
 ```bash
-npm ci
-```
-
-Fetch WASM assets:
-
-```bash
-npm run fetch:wasm
+npm i
 ```
 
 Run the app locally:
@@ -40,19 +34,7 @@ Run the app locally:
 npm run dev
 ```
 
-Or fetch WASM and start the dev server in one command:
-
-```bash
-npm run dev:wasm
-```
-
-To use a specific guard release version:
-
-```bash
-GUARD_VERSION=v1.3.0-beta3 npm run fetch:wasm
-```
-
-## Build
+Build:
 
 ```bash
 npm run build
@@ -61,17 +43,6 @@ npm run build
 ## Deployment
 
 The app is deployed to Firebase Hosting. Deployment runs automatically when changes are pushed to the `master` branch.
-
-## Notes
-
-The app expects the WASM files to be available under:
-
-```text
-public/wasm/lokalise-glossary-guard.wasm
-public/wasm/wasm_exec.js
-```
-
-These files are fetched from the `lokalise-glossary-guard` GitHub release assets.
 
 ## License
 
