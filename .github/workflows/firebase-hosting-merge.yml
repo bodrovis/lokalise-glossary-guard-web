@@ -1,32 +1,108 @@
 name: Deploy to Firebase Hosting on merge
 
-'on':
+on:
   push:
     branches:
       - master
 
-permissions:
-  checks: write
-  contents: read
-  pull-requests: write
+permissions: {}
+
+concurrency:
+  group: firebase-hosting-production
+  cancel-in-progress: true
 
 jobs:
-  build_and_deploy:
+  build:
+    name: Build website
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+
     steps:
-      - uses: actions/checkout@v7
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
+      # v7.0.0
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
-          cache: 'npm'
+          persist-credentials: false
 
-      - run: npm ci
+      # v6.4.0
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: "26"
+          cache: npm
 
-      - run: npm run build
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0.11.0
+      - name: Build website
+        run: npm run build
+
+      - name: Verify build output
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -d dist || {
+            echo "Build output directory dist/ was not created." >&2
+            exit 1
+          }
+
+          test -f firebase.json || {
+            echo "firebase.json was not found." >&2
+            exit 1
+          }
+
+          echo "== Build output =="
+          find dist -maxdepth 2 -type f | sort
+
+      # v7.0.1
+      - name: Upload Firebase artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: firebase-hosting
+          path: |
+            dist
+            firebase.json
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    name: Deploy to Firebase Hosting
+    runs-on: ubuntu-latest
+
+    needs:
+      - build
+
+    permissions:
+      contents: read
+
+    environment:
+      name: production
+
+    steps:
+      # v8.0.1
+      - name: Download Firebase artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: firebase-hosting
+          path: .
+
+      - name: Verify deployment files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -d dist
+          test -f firebase.json
+
+          echo "== Files ready for deployment =="
+          find dist -maxdepth 2 -type f | sort
+
+      # v0.11.0
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@500ac625ca2dd40cbd15f7659af953801858032a
         with:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOKALISE_GLOSSARY_GUARD }}
           projectId: lokalise-glossary-guard
